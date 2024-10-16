@@ -1,11 +1,13 @@
 import java.util.Random;
+import java.util.Scanner;
+
 public class Map {
     StringBuilder map = new StringBuilder();
     public Hero hero;
     //rozmiar linii po x
     private final int X = 280;
     //rozmiar linii po y
-    private final int Y = 30;
+    private final int Y = 32;
     //random dla tego , zeby generowac losowo
     Random random = new Random();
 
@@ -22,13 +24,25 @@ public class Map {
         for(int i = 0;i < PODZIEMIA_COUNT;i++){
             int generatedPosForPodziemie = random.nextInt(0,8400);
             //pomijamy symbol nowej linii
-            while (map.charAt(generatedPosForPodziemie) == '\n' && map.charAt(generatedPosForPodziemie + 1) != '\n' && map.charAt(generatedPosForPodziemie + 2) != '\n'  && map.charAt(generatedPosForPodziemie + 3) != '\n' ) {
+            while (map.charAt(generatedPosForPodziemie) == '\n'    &&
+                   map.charAt(generatedPosForPodziemie + 1) != '\n'&&
+                   map.charAt(generatedPosForPodziemie + 2) != '\n'&&
+                   map.charAt(generatedPosForPodziemie + 3) != '\n'&&
+                   map.charAt(generatedPosForPodziemie + 4) != '\n'&&
+                   map.charAt(generatedPosForPodziemie + 5) != '\n'&&
+                   map.charAt(generatedPosForPodziemie + 6) != '\n'&&
+                   map.charAt(generatedPosForPodziemie -1) != '\n' &&
+                   map.charAt(generatedPosForPodziemie - 2) != '\n'&&
+                   map.charAt(generatedPosForPodziemie - 3) != '\n'&&
+                   map.charAt(generatedPosForPodziemie - 4) != '\n'&&
+                   map.charAt(generatedPosForPodziemie - 5) != '\n'&&
+                   map.charAt(generatedPosForPodziemie - 6) != '\n' ) {
                 generatedPosForPodziemie = random.nextInt(0,8400);
             }
             //kiedy wszystko okej wstawjamy dotąd podiemie
             map.setCharAt(generatedPosForPodziemie,'[');
             for(int j = 1;j <= 4;j++){
-                map.setCharAt(generatedPosForPodziemie + j,' ');
+                map.setCharAt(generatedPosForPodziemie + j,'/');
             }
             map.setCharAt(generatedPosForPodziemie+5,']');
         }
@@ -37,9 +51,9 @@ public class Map {
     public String initializeMap(){
         StringBuilder main = new StringBuilder();
         for (int j = 0; j < Y; j++) {
-            StringBuilder sb = new StringBuilder("*");
+            StringBuilder sb = new StringBuilder("_");
             for (int i = 0; i < X; i++) {
-                sb.append("*");
+                sb.append("_");
                 if(j == 13 && i==3){
                     sb.append(hero.symbol);
                     i+=2;
@@ -48,7 +62,7 @@ public class Map {
             sb.append("\n");
             main.append(sb);
         }
-        return main.toString();
+        return main.append("\n Health: " + hero.HEALTH + "     ").append("Damage: " + hero.DAMAGE + "     ").toString();
     }
 
     public void printMap(){
@@ -57,19 +71,35 @@ public class Map {
     public void processMove(String move){
         switch (move){
             case "W":
-                processAnyMove(-281);
-            case  "A":
-                processAnyMove(-1);
-            case  "S":
-                processAnyMove(281);
-            case  "D":
-                processAnyMove(1);
+                processAnyMove(-282);
+                break;
+            case "A":
+                processAnyMove(-5);
+                break;
+            case "S":
+                processAnyMove(282);
+                break;
+            case "D":
+                processAnyMove(5);
+                break;
+            default: printMap();
         }
     }
     public void processAnyMove(int change){
-        int indexOfPlayer = map.indexOf("&");
-        map.deleteCharAt(indexOfPlayer);
-        map.insert(indexOfPlayer + change,"&");
+        int pastPos = map.indexOf("&");
+        int futurePos = pastPos + change;
+        Character character = map.charAt(futurePos);
+        if(character.equals('/') || character.equals('[') || character.equals(']')){
+            Podziemie podziemie = new Podziemie(hero);
+
+            podziemie.start();
+        }
+
+        hero.input = new Scanner(System.in);
+        map.deleteCharAt(pastPos);
+        map.insert(pastPos,"_");
+        map.deleteCharAt(futurePos);
+        map.insert(futurePos,hero.symbol);
 
         printMap();
     }

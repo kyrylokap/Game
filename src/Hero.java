@@ -7,8 +7,9 @@ public class Hero {
     String symbol;
     public int DAMAGE ;
     public int HEALTH;
+    boolean isInputActive = true;
     public List<String>controls = new ArrayList<>();
-    private final Scanner input = new Scanner(System.in);
+    public Scanner input = new Scanner(System.in);
     public Hero(String symbol){
         this.symbol = symbol;
         this.intitializeControls();
@@ -28,7 +29,7 @@ public class Hero {
                 while(!isMoveCorrect) {
                     move = input.nextLine();
                     for (int j = 0; j <= 3; j++) {
-                        if (move.toUpperCase().equals(controls.get(j))) {
+                        if(move.toUpperCase().equals(controls.get(j))) {
                             isMoveCorrect = true;
                             return move;
                         }
